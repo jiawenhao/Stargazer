@@ -28,11 +28,10 @@ library(splines)
 # data: The input data frame, with rows representing invididual designs.
 # response: The column that represents the response (or dependent) variable.
 # exclude: Exclude some columns from being used by the regression model.
-# binary: Include binary parameters in the model.
 # alpha: A small threshold for controlling the number of basic terms.
 # beta: A small threshold for controlling the number of interaction terms.
 # debug: Output extra information as the regression proceeds.
-stargazer = function(data, response = "runtime", exclude = {}, binary = TRUE,
+stargazer = function(data, response = "runtime", exclude = {},
                      alpha = 0, beta = 0, debug = FALSE) {
   attach(data)
   params = names(data)
@@ -44,14 +43,12 @@ stargazer = function(data, response = "runtime", exclude = {}, binary = TRUE,
   # Exclude specified factors from the parameter list.
   params = setdiff(params, exclude)
 
-  # Remove binary parameters if the option is off.
-  if (!binary) {
-    # Must start from the last parameter to avoid skipping items.
-    for (i in length(params) : 1) {
-      if (length(unique(get(params[i]))) < 3) {
-        cat(params[i], " is not being used.\n", sep = "")
-        params = params[-i]
-      }
+  # Remove parameters with fewer than 3 possible values.
+  # Must start from the last parameter to avoid skipping items.
+  for (i in length(params) : 1) {
+    if (length(unique(get(params[i]))) < 3) {
+      cat(params[i], " is not being used.\n", sep = "")
+      params = params[-i]
     }
   }
 
@@ -67,38 +64,35 @@ stargazer = function(data, response = "runtime", exclude = {}, binary = TRUE,
   for (i in 1 : nparam) {
     curve = ""
     u = unique(get(params[i]))
-    if (length(u) < 3) {
-      # Use a straight line for binary parameters.
-      curve = params[i]
+    stopifnot(length(u) > 2)
+
+    # Use 1/2/3 knot(s) for a parameter with 3/4/5+ unique values.
+    nknot = length(u) - 2
+    if (nknot > 3)
+      nknot = 3
+
+    # Determine if the parameter varies linearly or multiplicatively.
+    estimate = (max(u) + min(u)) / 2
+    actual = mean(u)
+    # Adopt linearity only if values spread *very* symmetrically.
+    islinear = FALSE
+    if (abs((estimate - actual) / estimate) < 0.01)
+      islinear = TRUE
+
+    # In either case, distribute knots evenly.
+    curve = paste("ns(", params[i], ", knots = c(", sep = "")
+    if (islinear) {
+      base = min(u)
+      step = (max(u) - min(u)) / (nknot + 1)
+      knots = paste(base + step * 1 : nknot, collapse = ", ")
+      curve = paste(curve, knots, sep = "")
     } else {
-      # Use 1/2/3 knot(s) for a parameter with 3/4/5+ unique values.
-      nknot = length(u) - 2
-      if (nknot > 3)
-        nknot = 3
-
-      # Determine if the parameter varies linearly or multiplicatively.
-      estimate = (max(u) + min(u)) / 2
-      actual = mean(u)
-      # Adopt linearity only if values spread *very* symmetrically.
-      islinear = FALSE
-      if (abs((estimate - actual) / estimate) < 0.01)
-        islinear = TRUE
-
-      # In either case, distribute knots evenly.
-      curve = paste("ns(", params[i], ", knots = c(", sep = "")
-      if (islinear) {
-        base = min(u)
-        step = (max(u) - min(u)) / (nknot + 1)
-        knots = paste(base + step * 1 : nknot, collapse = ", ")
-        curve = paste(curve, knots, sep = "")
-      } else {
-        base = log(min(u))
-        step = (log(max(u)) - log(min(u))) / (nknot + 1)
-        knots = paste(exp(base + step * 1 : nknot), collapse = ", ")
-        curve = paste(curve, knots, sep = "")
-      }
-      curve = paste(curve, "))", sep = "")
+      base = log(min(u))
+      step = (log(max(u)) - log(min(u))) / (nknot + 1)
+      knots = paste(exp(base + step * 1 : nknot), collapse = ", ")
+      curve = paste(curve, knots, sep = "")
     }
+    curve = paste(curve, "))", sep = "")
 
     if (debug)
       cat(params[i], ": ", curve, "\n", sep = "")
