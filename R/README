@@ -1,0 +1,19 @@
+Stargazer 1.0 [http://www.princeton.edu/~wjia/stargazer]
+Wenhao Jia [wjia@princeton.edu], Princeton University, 2012
+
+Scripts in this directory demonstrate how to use R to complete some common
+tasks. The scripts can be executed with the R "source" function. Because of the
+symbolic links in this folder, R's work directory can be set to either this
+directory or one level above.
+
+All scripts are currently written assuming the default matrix.csv input file is
+being used, but users can change the beginning of each script to adapt it to
+different input CSV files.
+
+As an example, to time the regression progress, here are the steps.
+
+1. Edit time.R so that files in line 8 is a list of CSV fiels to test.
+2. Execute "source('time.R')" in an R terminal.
+
+Other scripts can be used in similar ways. More information about the usage of
+each script can be found inside its source file.

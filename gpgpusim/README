@@ -1,0 +1,27 @@
+Stargazer 1.0 [http://www.princeton.edu/~wjia/stargazer]
+Wenhao Jia [wjia@princeton.edu], Princeton University, 2012
+
+Scripts in this directory should be used in conjunction with GPGPU-Sim
+[http://www.ece.ubc.ca/~aamodt/gpgpu-sim/] v2.x
+[https://dev.ece.ubc.ca/projects/gpgpu-sim/browser/v2.x].
+They are meant to automate some parts of the data collection and sampling
+process for Stargazer, if GPGPU-Sim is chosen to be used as the measurement
+tool for exploring the GPU design space.
+
+To use each script, set up GPGPU-Sim v2.x first. Then copy the scripts in this
+directory to the directory containing each benchmark program in the GPGPU-Sim
+source tree. Scripts can be executed in ways as Python scripts usually are. All
+scripts are currently written assuming the default BlackScholes program in
+GPGPU-Sim is being used, but users can change the beginning of each script to
+adapt it to different benchmark programs.
+
+As an example, if the user wants to run 100 simulations of BlackScholes with
+varying parameters, here are the steps.
+
+1. Set up GPGPU-Sim v2.x.
+2. Copy simulate.py to $GPGPUSIM/benchmarks/CUDA/BlackScholes.
+3. Modify the content of simulate.py so that nsample in line 51 equals 100.
+4. Execute "python simulate.py" in the terminal.
+
+Other scripts can be used in similar ways. More information about the usage of
+each script can be found inside its source file.
