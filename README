@@ -1,0 +1,22 @@
+Stargazer is a regression-based GPU design space exploration tool. It can be
+used to efficiently survey extremely large hardware and software design spaces
+of modern GPUs.
+For more information, please visit [http://www.princeton.edu/~wjia/stargazer].
+Stargazer 1.0, Wenhao Jia [wjia@princeton.edu], Princeton University, 2012
+
+This is a list of important files included in the package. Scripts have
+embedded comments which further explain their usage.
+
+1. stargazer.R: The core stepwise regression method.
+2. matrix.csv: Example input file from simulating a matrix multiply program.
+3. matrix-training.csv: 60% of the matrix.csv file, randomly selected.
+4. matrix-test.csv: 40% of the matrix.csv file, randomly selected.
+5. gpgpusim/README: Directions for how to use Python scripts in this folder.
+6. gpgpusim/simulate.py: Run GPGPU-Sim multiple times with varying parameters.
+7. gpgpusim/collect.py: Collect simulation results and generate CSV files.
+8. gpgpusim/split.py: Split a CSV file into a traing set and a test set.
+9. gpgpusim/filter.py: Scan a CSV file s.t. only lines w/ certain values remain.
+10. R/README: Directions for how to use R scripts in this folder.
+11. R/accuracy.R: Measure model prediction accuracy w/ training and test sets.
+12. R/size.R: Show how to obtain the prediction accuracy vs. sample size curve.
+13. R/time.R: Demonstrates how to time the regression process.
